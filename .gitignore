@@ -1,0 +1,7 @@
+
+# Ignore helper bash scripts
+*.sh
+
+# Ignore go test -coverprofile
+*.out
+
