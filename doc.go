@@ -1,4 +1,4 @@
-// Package suggest is an implementation of a simple command autocorrect feature.
+// Package suggest is an implementation of a simple command auto-correct feature.
 //
 // The main application would be to compare a user entered command against a list of known
 // available commands. The suggest library can aim to either autocorrect to a very close match,

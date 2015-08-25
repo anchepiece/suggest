@@ -5,13 +5,14 @@ import (
 	"strings"
 )
 
+// Suggest struct wraps a list of Commands with Options
 type Suggest struct {
-	Options  SuggestOptions
+	Options  Options
 	Commands []string
 }
 
-// SuggestOptions contains customizable weights to apply to a query
-type SuggestOptions struct {
+// Options contains customizable weights to apply to a query
+type Options struct {
 	CostSwap            int  `json:"costswap,omitempty"`
 	CostSubstitution    int  `json:"costsubstitution,omitempty"`
 	CostInsertion       int  `json:"costinsertion,omitempty"`
@@ -21,50 +22,50 @@ type SuggestOptions struct {
 }
 
 const (
-	DEFAULT_COST_SWAP          = 0
-	DEFAULT_COST_SUBSTITUTION  = 2
-	DEFAULT_COST_INSERTION     = 1
-	DEFAULT_COST_DELETION      = 4
-	DEFAULT_SIMILARITY_MINIMUM = 6
+	defaultCostSwap         = 0
+	defaultCostSubstitution = 2
+	defaultCostInsertion    = 1
+	defaultCostDeletion     = 4
+	defaultSimilarity       = 6
 )
 
-func (options *SuggestOptions) getCostSwap() int {
+func (options *Options) getCostSwap() int {
 	if options.CostSwap <= 0 {
-		options.CostSwap = DEFAULT_COST_SWAP
+		options.CostSwap = defaultCostSwap
 	}
 	return options.CostSwap
 }
 
-func (options *SuggestOptions) getCostSubstitution() int {
+func (options *Options) getCostSubstitution() int {
 	if options.CostSubstitution <= 0 {
-		options.CostSubstitution = DEFAULT_COST_SUBSTITUTION
+		options.CostSubstitution = defaultCostSubstitution
 	}
 	return options.CostSubstitution
 }
 
-func (options *SuggestOptions) getCostInsertion() int {
+func (options *Options) getCostInsertion() int {
 	if options.CostInsertion <= 0 {
-		options.CostInsertion = DEFAULT_COST_INSERTION
+		options.CostInsertion = defaultCostInsertion
 	}
 	return options.CostInsertion
 }
 
-func (options *SuggestOptions) getCostDeletion() int {
+func (options *Options) getCostDeletion() int {
 	if options.CostDeletion <= 0 {
-		options.CostDeletion = DEFAULT_COST_DELETION
+		options.CostDeletion = defaultCostDeletion
 	}
 	return options.CostDeletion
 }
 
-func (options *SuggestOptions) getSimilarityMinimum() int {
+func (options *Options) getSimilarityMinimum() int {
 	if options.SimilarityMinimum <= 0 {
-		options.SimilarityMinimum = DEFAULT_SIMILARITY_MINIMUM
+		options.SimilarityMinimum = defaultSimilarity
 	}
 	return options.SimilarityMinimum
 }
 
-// SuggestResult contains the complete calulated result of a successful query
-type SuggestResult struct {
+// Result contains the complete calulated result of a successful query
+type Result struct {
 	// Autocorrect is the identified best single match when option enabled
 	Autocorrect string
 	// Matches contains the full listing of similar entries with scores below the similarity minimum
@@ -72,12 +73,12 @@ type SuggestResult struct {
 }
 
 // Success returns true when containing at least one valid result
-func (r *SuggestResult) Success() bool {
+func (r *Result) Success() bool {
 	return len(r.Matches) > 0
 }
 
 // New allocates a new Suggest with the given options
-func New(options SuggestOptions) *Suggest {
+func New(options Options) *Suggest {
 	return &Suggest{
 		Options: options,
 	}
@@ -85,13 +86,13 @@ func New(options SuggestOptions) *Suggest {
 
 // Query will calculate the best matching entries including
 // an Autocorrect option if requested
-func (s *Suggest) Query(query string) (SuggestResult, error) {
+func (s *Suggest) Query(query string) (Result, error) {
 	return s.QueryAgainst(query, s.Commands)
 }
 
 // QueryAgainst will calculate the best matching entries against passed commands
 // including an Autocorrect option if requested
-func (s *Suggest) QueryAgainst(query string, commands []string) (SuggestResult, error) {
+func (s *Suggest) QueryAgainst(query string, commands []string) (Result, error) {
 
 	best := 100
 	var autocorrect string
@@ -127,7 +128,7 @@ func (s *Suggest) QueryAgainst(query string, commands []string) (SuggestResult, 
 
 	if len(scoreboard) == 0 {
 		// no candidates meet the mimimum similarity
-		return SuggestResult{}, nil
+		return Result{}, nil
 	}
 
 	if !s.Options.AutocorrectDisabled {
@@ -146,7 +147,7 @@ func (s *Suggest) QueryAgainst(query string, commands []string) (SuggestResult, 
 	//fmt.Println("scoreboard", scoreboard)
 	sort.Ints(scores)
 	for _, v := range scores {
-		for k, _ := range scoreboard {
+		for k := range scoreboard {
 			if v == scoreboard[k] {
 				if contains(matches, k) {
 					continue
@@ -158,7 +159,7 @@ func (s *Suggest) QueryAgainst(query string, commands []string) (SuggestResult, 
 	}
 
 	//fmt.Println("matches", matches)
-	return SuggestResult{
+	return Result{
 		Autocorrect: autocorrect,
 		Matches:     matches}, nil
 }
