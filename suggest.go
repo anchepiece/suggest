@@ -64,7 +64,7 @@ func (options *Options) getSimilarityMinimum() int {
 	return options.SimilarityMinimum
 }
 
-// Result contains the complete calulated result of a successful query
+// Result contains the complete calculated result of a successful query
 type Result struct {
 	// Autocorrect is the identified best single match when option enabled
 	Autocorrect string
@@ -127,7 +127,7 @@ func (s *Suggest) QueryAgainst(query string, commands []string) (Result, error) 
 	}
 
 	if len(scoreboard) == 0 {
-		// no candidates meet the mimimum similarity
+		// no candidates meet the minimum similarity
 		return Result{}, nil
 	}
 
