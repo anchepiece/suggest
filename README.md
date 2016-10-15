@@ -66,11 +66,15 @@ func main() {
 
 [GoDoc](https://godoc.org/github.com/anchepiece/suggest)
 
+## Example command line usage
+See the following project for an example usage in a command line application.
+https://github.com/anchepiece/suggest-autocorrect
+
 ## TODO
 - [ ] Boost prefix
 - [ ] Complete testing 
 - [ ] Web backend service
-- [ ] Command-line help usage example 
+- [X] Command-line help usage example 
 - [ ] Ideas as to other applications
 
 ## License
