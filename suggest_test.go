@@ -201,7 +201,7 @@ func TestAutocorrectDisabled(t *testing.T) {
 		},
 	}
 
-	s := suggest.New(suggest.SuggestOptions{AutocorrectDisabled: true})
+	s := suggest.New(suggest.Options{AutocorrectDisabled: true})
 
 	for _, tt := range autocorrectDisabledTests {
 		query := tt.query
